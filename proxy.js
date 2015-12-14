@@ -283,6 +283,7 @@ function onconnect (req, socket, head) {
   debug.request('%s %s HTTP/%s ', req.method, req.url, req.httpVersion);
   assert(!head || 0 == head.length, '"head" should be empty for proxy requests');
 
+  var server = this;
   var res;
   var target;
   var gotResponse = false;
@@ -405,14 +406,35 @@ function onconnect (req, socket, head) {
     var parts = req.url.split(':');
     var host = parts[0];
     var port = +parts[1];
-    var opts = { host: host, port: port };
+    var opts = { host: host, port: port, secureEndpoint: true };
 
     debug.proxyRequest('connecting to proxy target %j', opts);
-    target = net.connect(opts);
-    target.on('connect', ontargetconnect);
-    target.on('close', ontargetclose);
-    target.on('error', ontargeterror);
-    target.on('end', ontargetend);
+
+    // custom `http.Agent` support, set `server.agent`
+    var agent = server.agent;
+    if (null != agent) {
+      debug.proxyRequest('setting custom `http.Agent` option for proxy request: %s', agent);
+      server.agent.callback(socket, opts, function(err, _target){
+        if (err) {
+          res.writeHead(500);
+          res.end((err.stack || err.message || err) + '\n');
+          return;
+        }
+
+        // Pipe the target proxy and the request socket
+        target = _target
+        target.on('close', ontargetclose);
+        target.on('error', ontargeterror);
+        target.on('end', ontargetend);
+        ontargetconnect()
+      });
+    }else{
+      target = net.connect(opts);
+      target.on('connect', ontargetconnect);
+      target.on('close', ontargetclose);
+      target.on('error', ontargeterror);
+      target.on('end', ontargetend);
+    }
   });
 }
 
