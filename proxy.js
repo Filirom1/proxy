@@ -409,7 +409,7 @@ function onconnect (req, socket, head) {
     var parts = req.url.split(':');
     var host = parts[0];
     var port = +parts[1];
-    var opts = { host: host, port: port, secureEndpoint: true };
+    var opts = { host: host, port: port };
 
     debug.proxyRequest('connecting to proxy target %j', opts);
 
