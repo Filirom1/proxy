@@ -109,6 +109,9 @@ function eachHeader (obj, fn) {
  */
 
 function onrequest (req, res) {
+  if(!req.method.match(/CONNECT/) && !req.url.match(/http:\/\//i)) {
+    req.url = 'http://' + req.headers.host + req.url
+  }
   debug.request('%s %s HTTP/%s ', req.method, req.url, req.httpVersion);
   var server = this;
   var socket = req.socket;
