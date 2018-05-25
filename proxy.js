@@ -234,6 +234,10 @@ function onrequest (req, res) {
 
       debug.response('HTTP/1.1 %s', proxyRes.statusCode);
       res.writeHead(proxyRes.statusCode, headers);
+      Object.keys(headers).forEach(function(key){
+        debug.response('Response Header: "%s: %s"', key, headers[key]);
+      });
+      res.flushHeaders()
       proxyRes.pipe(res);
       res.on('finish', onfinish);
     });
