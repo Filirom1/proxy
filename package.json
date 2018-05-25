@@ -1,12 +1,13 @@
 {
   "name": "proxy",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "An HTTP proxy written with Node.js (think Squid)",
   "main": "proxy.js",
   "scripts": {
-    "test": "mocha --reporter spec"
+    "test": "mocha --reporter spec",
+    "start": "node ./bin/proxy.js"
   },
-  "bin": "./bin/proxy",
+  "bin": "./bin/proxy.js",
   "keywords": [
     "http",
     "https",
@@ -27,11 +28,20 @@
   },
   "license": "MIT",
   "dependencies": {
+    "args": "3.0.2",
     "basic-auth-parser": "0.0.2",
-    "commander": "2.2.0",
-    "debug": "2"
+    "debug": "2.6.8"
   },
   "devDependencies": {
-    "mocha": "2.2.5"
+    "mocha": "3.4.2",
+    "pkg": "4.2.2"
+  },
+  "pkg": {
+    "targets": [
+      "node8-alpine-x64",
+      "node8-linux-x64",
+      "node8-macos-x64",
+      "node8-win-x64"
+    ]
   }
 }
